@@ -5,7 +5,7 @@ date: "`r Sys.Date()`"
 output: 
   pdf_document:
     toc: true
-    toc_depth: 3
+    toc_depth: 4
     highlight: tango
     number_sections: true
     latex_engine: xelatex
@@ -81,7 +81,7 @@ library(factoextra)
 
 Los datos empleados se almacenan en un objeto de tipo `SummarizedExperiment`, que se encuentra descargado como archivo .Rda en el repositorio de este trabajo (consultar sección 'Repositorio en Github'). 
 
-Dicho archivo se ha creado manualmente a partir de la tabla de datos original, en formato .xlsx, que se encuentra en el repositorio proporcionado en el enunciado de la actividad. Todos los pasos para el diseño del `SummarizedExperiment` y su descarga en .Rda se encuentran documentados en el apéndice de este informe. 
+Dicho archivo se ha creado manualmente a partir de la tabla de datos original, en formato .xlsx, que se encuentra en el repositorio proporcionado en el enunciado de la actividad. **Todos los pasos para el diseño del `SummarizedExperiment` y su descarga en .Rda se encuentran documentados en el apéndice de este informe.**
 
 Para cargar los datos en RStudio ejecutamos el siguiente comando, que supondrá la aparición de un nuevo objeto `SummarizedExperiment` en nuestro entorno de trabajo denominado `se`.
 
@@ -101,6 +101,7 @@ show(se)
   - Primeras filas de colData(se):
   
     - **clase** indica el grupo al que pertenece la muestra: QC - Quality Control; GC - Cáncer gástrico; BN - Enfermedad gástrica benigna; HE - Estado saludable
+    
     - **batch** hace referencia a la fecha en la que se analiza la muestra. Para este dataset las muestras pertenecen a 4 fechas distintas, que se representan con valores de batch 1, 2, 3 o 4.
     
   
@@ -111,6 +112,7 @@ kableExtra::kable(head(colData(se)))
   - Primeras filas de rowData(se):
   
       - **Perc_missing** indica el porcentaje de valores faltantes del metabolito.
+      
       - **QC_RSD** indica la variabilidad relativa de los metabolitos. Valores de RSD muy altos se asocian con mala consistencia de la señal.
     
   
@@ -121,7 +123,7 @@ kableExtra::kable(head(rowData(se)))
   - Primeras filas de assay(se):
   
 ```{r}
-kableExtra::kable(head(assay(se)))
+kableExtra::kable(head(assay(se)[,1:4]))
 ```
 
   - Metadatos:
@@ -683,6 +685,23 @@ Como podemos comprobar, el método de K-Means tampoco proporciona resultados fav
 
 # Github
 
+Los archivos se han subido a Github mediante los siguientes pasos:
+
+1. Activación del control de versiones en RStudio: Tools > Version Control > Project Set Up > Git
+
+2. Selección de los archivos 'no rastreados'. En la siguiente figura se muestra cómo los selecciono de manera manual (ya que no son necesarios todos).
+
+![archivos](githubimagen.png)
+
+3. Añado un comentario en "Commit".
+
+4. Ejecutamos en la terminal lo siguiente para subir los archivos al repositorio:
+
+*git push -u origin master*
+
+*El link al repositorio es el siguiente:*
+
+https://github.com/cjualia/-Juarez-Alia-Cristina-PEC1/tree/master
 
 
 # Apéndice
@@ -698,11 +717,6 @@ GCdata <- as.matrix(read_excel("GastricCancer_NMR.xlsx", sheet = "Data"))
 
 # Info de metabolitos, en la pestaña "Peak"
 metabolitos <- as.data.frame(read_excel("GastricCancer_NMR.xlsx", sheet = "Peak")) 
-
-library(readr)
-# El archivo Muestras.txt es un extracto del archivo ST001047_AN001711.txt original
-# del estudio, y está disponible en el repositorio
-muestras <- as.data.frame(read_table("Muestras.txt", col_names = FALSE)) 
 
 # Preparación de tablas:
 
@@ -874,9 +888,11 @@ scale_by_group <- function(se, clase) {
 
 ```{r, eval=FALSE}
 # Calculamos las varianzas explicadas por cada componente principal
-var_expl1 <- round(((pca2$sdev[1])^2/sum((pca2$sdev)^2)*100),2)
-var_expl2 <- round(((pca2$sdev[2])^2/sum((pca2$sdev)^2)*100),2)
-var_expl3 <- round(((pca2$sdev[3])^2/sum((pca2$sdev)^2)*100),2)
+# pca2$sdev contiene las desviaciones estándar de cada PC
+# La sdev^2 es igual a la varianza
+var_expl1 <- round(((pca2$sdev[1])^2/sum((pca2$sdev)^2)*100),2) # De la PC1
+var_expl2 <- round(((pca2$sdev[2])^2/sum((pca2$sdev)^2)*100),2) # De la PC2
+var_expl3 <- round(((pca2$sdev[3])^2/sum((pca2$sdev)^2)*100),2) # De la PC3
 var_expl_total <- sum(var_expl1,var_expl2,var_expl3)
 ```
 
@@ -886,12 +902,12 @@ var_expl_total <- sum(var_expl1,var_expl2,var_expl3)
 ```{r, eval=FALSE}
 plot_pca <- function(df, colores, factor, titulo) {
   # Crear el gráfico 3D
-  scatterplot3d(df$PC1, df$PC2, df$PC3, 
-                color = colores[as.numeric(factor)],  
+  scatterplot3d(df$PC1, df$PC2, df$PC3, # Selección de los 3 PC
+                color = colores[as.numeric(factor)], # Puntos coloreados según el factor indicado
                 pch = 20,  
-                xlab = paste("PC1", var_expl1, "%"),  
-                ylab = paste("PC2", var_expl2, "%"),  
-                zlab = paste("PC3", var_expl3, "%"))
+                xlab = paste("PC1", var_expl1, "%"),  # Incluimos en los ejes 
+                ylab = paste("PC2", var_expl2, "%"),  # el % de varianza explicado
+                zlab = paste("PC3", var_expl3, "%"))  # de cada PC
   
   # Añadir la leyenda
   legend("topright",                             
@@ -911,12 +927,13 @@ plot_pca <- function(df, colores, factor, titulo) {
 ```{r, eval=FALSE}
 valores_met <- function(se,metabolitos,clase){
   
-  BN <- rownames(colData(se)[colData(se)$clase == "BN", ])
+  # recogemos el nombre de las muestras correspondientes a cada grupo
+  BN <- rownames(colData(se)[colData(se)$clase == "BN", ]) 
   HE <- rownames(colData(se)[colData(se)$clase == "HE", ])
   GC <- rownames(colData(se)[colData(se)$clase == "GC", ])
   
-  if (clase == "BN"){
-    muestras = BN
+  if (clase == "BN"){ # Si el grupo especificado como argumento es "BN"
+    muestras = BN     # Las muestras seleccionadas son las que están en BN
   } else if (clase == "HE"){
     muestras = HE
   } else if (clase == "GC"){
@@ -924,14 +941,16 @@ valores_met <- function(se,metabolitos,clase){
   }
   
   df = data.frame()
-  for (metabolito in metabolitos){
-   datos = data.frame(assay(se)[metabolito, muestras])
-   datos = cbind(datos,rep(clase,length(muestras)), rep(metabolito,length(muestras)))
-   df = rbind(df, datos)
+  
+  # Para cada uno de los metabolitos indicados en el argumento
+  for (metabolito in metabolitos){ 
+   datos = data.frame(assay(se)[metabolito, muestras]) # Extraemos sus valores
+   datos = cbind(datos,rep(clase,length(muestras)), rep(metabolito,length(muestras))) 
+   df = rbind(df, datos)                   # Y los vamos uniendo al df 
   }
   colnames(df) = c("valor", "clase", "metabolito")
-  return(df)
-}
+  return(df) # Se devuelve el dataframe con los datos de los metabolitos especificados 
+}            # del grupo (clase) especificado
 
 # Aplica `valores_met()` para cada clase 
 seleccion <- lapply(c("BN", "HE", "GC"), function(clase)

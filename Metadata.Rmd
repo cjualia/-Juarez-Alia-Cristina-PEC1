@@ -1,0 +1,25 @@
+---
+title: "Metadata"
+author: "Cristina Juárez Alía"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+**TITLE: 1H-NMR urinary metabolomic profiling for diagnosis of gastric cancer**
+
+**BACKGROUND:** Metabolomics has shown promise in gastric cancer (GC) detection.This research sought to identify whether GC has a unique urinary metabolomic profile compared with benign gastric disease (BN) and healthy (HE) patients.
+
+**METHODS:** Urine from 43 GC, 40 BN, and 40 matched HE patients was analysed using 1H nuclear magnetic resonance (1H-NMR) spectroscopy, generating 77 reproducible metabolites (QC-RSD <25%). Univariate and multivariate (MVA) statistics were employed. A parsimonious biomarker profile of GC vs HE was investigated usig LASSO regularised logistic regression (LASSO-LR). Model performance was assessed using Receiver Operating Characteristic (ROC) curves. Results: GC displayed a clear discriminatory biomarker profile; the BN profile overlapped with GC and HE. LASSO-LR identified three discriminatory metabolites: 2-hydroxyisobutyrate,3-indoxylsulfate, and alanine, which produced a discriminatory model with an area under the ROC of 0.95. Conclusions: GC patients have a distinct urinary metabolite profile. This study shows clinical potential for metabolic profiling for early GC diagnosis.
+
+**INSTITUTE:** University of Alberta
+
+**LAST_NAME:** Broadhurst
+
+**FIRST_NAME:** David
+
+**ADDRESS:** Department of Medicine, 4126A Katz Group Centre for Pharmacy & Health, University of Alberta, Edmonton, AB T6G 2E1, Canada.
+**EMAIL:** d.broadhurst@ecu.edu.au
+
+**PHONE:** +61 8 6304 2705
+
+**PUBLICATIONS:** Chan, A. W., Mercier, P., Schiller, D., Bailey, R., Robbins, S., Eurich, D. T., Sawyer, M. B., Broadhurst, D. (2016). 1H-NMR urinary metabolomic profiling for diagnosis of gastric cancer. British Journal of Cancer, 114(1), 59-62. doi:10.1038/bjc.2015.414
